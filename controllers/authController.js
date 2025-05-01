@@ -46,7 +46,7 @@ const userLogin = async (req, res) =>{
         // generate jwt token
         const payLoad = {
             user: {
-                id: user.id,
+                id: user._id,
                 role: user.role
             }
         }
@@ -56,7 +56,7 @@ const userLogin = async (req, res) =>{
         jwt.sign(
             payLoad,
             process.env.JWT_SECRET,
-            {expiresIn: '1h'},
+            {expiresIn: '7d'},
             (err, token) => {
                 if (err) throw err
                 res.json({token})
@@ -67,7 +67,6 @@ const userLogin = async (req, res) =>{
         return res.status(500).send('server error')
     }
 }
-
 
 
 module.exports = {registerUser, userLogin}

@@ -11,7 +11,7 @@ const authMiddleware = async(req, res, next) =>{
     try {
         const token = authHeader.split(' ')[1]
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        req.user = await User.findById(decoded.id).select('-password')
+        req.user = await User.findById(decoded.user.id).select('-password')
         next()
     } catch(err) {
         res.status(401).json({message: "token is not valid"})
@@ -20,10 +20,12 @@ const authMiddleware = async(req, res, next) =>{
 }
 
 const admin = (req, res, next) =>{
-    if(req.user && req.user.role === 'admin'){
+    if (req.user && req.user.role === 'admin') {
         next()
-    } else {
-        res.status(403).json({ message: 'Access denied' });
+      } else if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized: user not found' })
+      } else {
+        return res.status(403).json({ message: 'Access denied: not an admin' })
       }
 }
 
